@@ -8,8 +8,8 @@ function gethostname()
     return unsafe_string(pointer(hostname))
 end
 
-function testLib()	
+function advertise()	
 	# we want to pass an advertisement count
-	t1 = ccall( (:testLib, "/home/pi/juliaMcast/libJuliaMcast.so"), Int32, ());
+	t1 = ccall( (:advertise, "/home/pi/juliaMcast/libJuliaMcast.so"), Int32, ());
 end
 

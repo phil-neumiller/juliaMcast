@@ -3,6 +3,12 @@
 #include <inttypes.h>
 #include "msock.h"
 #include <pthread.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
 
 #define SLEEP_1_SECOND 1000000
 #define LOOP_COUNT 10
@@ -34,7 +40,9 @@ void *inc_x(void *x_void_ptr)
 	return NULL;
 }
 
-int testLib() 
+
+
+int advertise() 
 {
 	printf("Frankie's monster is alive....\n");
 	int x = 0, y = 0;
@@ -81,6 +89,41 @@ int testlib()
 	return 1;
 }
 
+int discover()
+{
+	discoverNeighbors("223.0.0.1", "222");
+	return 0;
+}
+
+int discoverNeighbors(char *multicastIP, char *mulitcastPort)
+{
+	SOCKET		sock;
+	char*		recvBuf;
+	int			recvBufLen = 100;
+	int 		bytes=0;
+	time_t 	timer;
+	
+	recvBuf = 	malloc(recvBufLen*sizeof(char));
+
+	// Creat the receive socket
+	sock = mcast_recv_socket(multicastIP, mulitcastPort, recvBufLen);
+	
+	if(sock < 0)
+		DieWithError("mcast_recv_socket() failed");
+
+	
+    /* Receive a single datagram from the server */
+    if ((bytes = recvfrom(sock, recvBuf, recvBufLen, 0, NULL, 0)) < 0)
+		DieWithError("recvfrom() failed");
+                
+	int this_p = ntohl(*(int*)recvBuf);                
+	time(&timer);  /* get time stamp to print with recieved data */	
+	printf("Time Received: %.*s : packet %d, %d bytes\n",
+	 (int)strlen(ctime(&timer)) - 1, ctime(&timer), this_p, bytes);
+
+	exit(EXIT_SUCCESS);
+}
+
 int advertisePresence(char *multicastIP, char *multicastPort) 
 {
 	SOCKET 	sock;
@@ -95,8 +138,7 @@ int advertisePresence(char *multicastIP, char *multicastPort)
 	sendStringLen = strlen(advertisementStr);	
 	sock = mcast_send_socket(multicastIP, multicastPort, multicastTTL, &multicastAddr);	
 	if(sock == -1 )
-		printf("\nmcast_send_socket() failed\n");
-	else printf("\nnmcast_send_socket() created\n");	
+		printf("\nmcast_send_socket() failed\n");	
 	        
     if ( sendto(sock, advertisementStr, sendStringLen, 0,
 		  multicastAddr->ai_addr, multicastAddr->ai_addrlen) != sendStringLen )

@@ -7,9 +7,11 @@
 #include <netdb.h>
 #include "msock.h"
 
-extern int testLib();
+extern int advertise();
 extern int testlib();
-extern int advertisePresence(char *multicastIP, char *multicastPort);
+extern int discover();
+extern int advertisePresence(char *, char *);
+extern int discoverNeighbors(char *, char *);
 
 #endif
 

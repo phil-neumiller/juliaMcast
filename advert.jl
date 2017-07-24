@@ -1,3 +1,3 @@
 include("juliaMcast.jl")
-testLib()
+advertise()
 
