@@ -1,0 +1,3 @@
+include("juliaMcast.jl")
+testLib()
+
