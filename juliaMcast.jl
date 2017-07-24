@@ -13,3 +13,8 @@ function advertise()
 	t1 = ccall( (:advertise, "/home/pi/juliaMcast/libJuliaMcast.so"), Int32, ());
 end
 
+function discover()	
+	# we want to pass an advertisement count
+	t1 = ccall( (:discover, "/home/pi/juliaMcast/libJuliaMcast.so"), Int32, ());
+end
+

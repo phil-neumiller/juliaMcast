@@ -1,0 +1,11 @@
+0000000000000000000000000000000000000000 e677ebb46f76e5a1909a5c54b6457496cb8885f4 Phil Neumiller <phil@wpanalytics.us> 1500896194 +0000	commit (initial): Initial command line commit
+e677ebb46f76e5a1909a5c54b6457496cb8885f4 cc226b6668c715158353033af81cc8936dbb7143 Phil Neumiller <phil@wpanalytics.us> 1500896245 +0000	commit: Forgot this file
+cc226b6668c715158353033af81cc8936dbb7143 6d9211a87c8a22326f81ca8541bdcdf3704b3d76 Phil Neumiller <phil@wpanalytics.us> 1500896412 +0000	commit: Added makefile
+6d9211a87c8a22326f81ca8541bdcdf3704b3d76 7072cab6714b451ff341ebc9ce8349885b1e3719 Phil Neumiller <phil@wpanalytics.us> 1500896835 +0000	commit: Updated makefile
+7072cab6714b451ff341ebc9ce8349885b1e3719 5efa09eb735da8625aba7d08eb72e14f34d0999f Phil Neumiller <phil@wpanalytics.us> 1500897046 +0000	commit: Updated makefile
+5efa09eb735da8625aba7d08eb72e14f34d0999f e77c23c1a6ef65c8a9f662dccc95383b14e34e5a Phil Neumiller <phil@wpanalytics.us> 1500898050 +0000	commit: Some updates for seperate library
+e77c23c1a6ef65c8a9f662dccc95383b14e34e5a 15c78dedad8af1192c09fec823e871c68f3c1032 Phil Neumiller <phil@wpanalytics.us> 1500906248 +0000	commit: Update for shared library
+15c78dedad8af1192c09fec823e871c68f3c1032 f33faa0d1f30588262897570e67833f546dfb425 Phil Neumiller <phil@wpanalytics.us> 1500910133 +0000	commit: Restructured code to add pthread spawn from Julia.
+f33faa0d1f30588262897570e67833f546dfb425 9112ddd141526a1f8af1f3f1cd73883177e8c5a5 Phil Neumiller <phil@wpanalytics.us> 1500911753 +0000	commit: Bug fixes updates
+9112ddd141526a1f8af1f3f1cd73883177e8c5a5 dc269d6643bebcce49e3403e20be4c9a107d2fed Phil Neumiller <phil@wpanalytics.us> 1500912289 +0000	commit: Fix
+dc269d6643bebcce49e3403e20be4c9a107d2fed 1ae9730ae96beeb711607bc0196e6b05cb7f9f41 Phil Neumiller <phil@wpanalytics.us> 1500914687 +0000	commit: Command line julia test function

@@ -1,0 +1,14 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[user]
+	mail = phil@wpanalytics.us
+	name = Phil Neumiller
+[remote "origin"]
+	url = git@github:phil-neumiller/juliaMcast
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[gui]
+	wmstate = normal
+	geometry = 851x813+213+63 192 177

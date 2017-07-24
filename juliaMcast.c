@@ -1,4 +1,3 @@
-
 #include "juliaMcast.h"
 #include <inttypes.h>
 #include "msock.h"
@@ -91,6 +90,8 @@ int testlib()
 
 int discover()
 {
+	printf("In neighbor discovery C-function\n");
+	fflush(stdout);
 	discoverNeighbors("223.0.0.1", "222");
 	return 0;
 }
@@ -99,7 +100,7 @@ int discoverNeighbors(char *multicastIP, char *mulitcastPort)
 {
 	SOCKET		sock;
 	char*		recvBuf;
-	int			recvBufLen = 100;
+	int			recvBufLen = 2240;
 	int 		bytes=0;
 	time_t 	timer;
 	
@@ -110,6 +111,7 @@ int discoverNeighbors(char *multicastIP, char *mulitcastPort)
 	
 	if(sock < 0)
 		DieWithError("mcast_recv_socket() failed");
+	else printf("receive mulicast socket created\n");
 
 	
     /* Receive a single datagram from the server */

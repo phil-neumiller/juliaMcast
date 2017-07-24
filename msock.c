@@ -2,17 +2,19 @@
   msock.c - multicast socket creation routines
 
   (C) 2016 Christian Beier <dontmind@sdf.org>
+  * 
+  * Author: Phil Neumiller White Pine Analytics, LLC, made some 
+  * enhancements for use in Julia as a .so library.
+  * July 24, 2017
 
 */
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
-
 #include "msock.h"
 
+int dfltrcvbuf = 200;
 
 SOCKET mcast_send_socket(char* multicastIP, char* multicastPort,  int multicastTTL, struct addrinfo **multicastAddr) {
 
@@ -58,9 +60,9 @@ SOCKET mcast_send_socket(char* multicastIP, char* multicastPort,  int multicastT
 		    (*multicastAddr)->ai_family == PF_INET6 ? IPPROTO_IPV6        : IPPROTO_IP,
 		    (*multicastAddr)->ai_family == PF_INET6 ? IPV6_MULTICAST_HOPS : IP_MULTICAST_TTL,
 		    (char*) &multicastTTL, sizeof(multicastTTL)) != 0 ) {
-	perror("setsockopt() failed");
-	freeaddrinfo(*multicastAddr);
-	return -1;
+			perror("setsockopt() failed");
+			freeaddrinfo(*multicastAddr);
+		return -1;
     }
     
     
@@ -135,28 +137,26 @@ SOCKET mcast_recv_socket(char* multicastIP, char* multicastPort, int multicastRe
 	perror("socket() failed");
 	goto error;
     }
-    
-    
-   
+          
     /*
      * Enable SO_REUSEADDR to allow multiple instances of this
      * application to receive copies of the multicast datagrams.
      */
     if (setsockopt(sock,SOL_SOCKET,SO_REUSEADDR,(char*)&yes,sizeof(int)) == -1) {
-	perror("setsockopt");
-	goto error;
+		perror("setsockopt");
+		goto error;
     }
   
     /* Bind the local address to the multicast port */
     if ( bind(sock, localAddr->ai_addr, localAddr->ai_addrlen) != 0 ) {
-	perror("bind() failed");
-	goto error;
+		perror("bind() failed");
+		goto error;
     }
 
     /* get/set socket receive buffer */
     int optval=0;
     socklen_t optval_len = sizeof(optval);
-    int dfltrcvbuf;
+    
     if(getsockopt(sock, SOL_SOCKET, SO_RCVBUF,(char*)&optval, &optval_len) !=0) {
 	perror("getsockopt");
 	goto error;
@@ -164,18 +164,15 @@ SOCKET mcast_recv_socket(char* multicastIP, char* multicastPort, int multicastRe
     dfltrcvbuf = optval;
     optval = multicastRecvBufSize;
     if(setsockopt(sock,SOL_SOCKET,SO_RCVBUF,(char*)&optval,sizeof(optval)) != 0) {
-	perror("setsockopt");
-	goto error;
+		perror("setsockopt");
+		goto error;
     }
     if(getsockopt(sock, SOL_SOCKET, SO_RCVBUF,(char*)&optval, &optval_len) != 0) {
-	perror("getsockopt");
-	goto error;
+		perror("getsockopt");
+		goto error;
     }
-    printf("tried to set socket receive buffer from %d to %d, got %d\n",
-	   dfltrcvbuf, multicastRecvBufSize, optval);
-
-  
-    
+    //printf("tried to set socket receive buffer from %d to %d, got %d\n",
+	//   dfltrcvbuf, multicastRecvBufSize, optval);
     
     /* Join the multicast group. We do this seperately depending on whether we
      * are using IPv4 or IPv6. 
@@ -195,7 +192,7 @@ SOCKET mcast_recv_socket(char* multicastIP, char* multicastPort, int multicastRe
 
 	    /* Join the multicast address */
 	    if ( setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &multicastRequest, sizeof(multicastRequest)) != 0 ) {
-		perror("setsockopt() failed");
+			perror("setsockopt() failed");
 		goto error;
 	    }
 	}
@@ -214,21 +211,19 @@ SOCKET mcast_recv_socket(char* multicastIP, char* multicastPort, int multicastRe
 
 	    /* Join the multicast address */
 	    if ( setsockopt(sock, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP, (char*) &multicastRequest, sizeof(multicastRequest)) != 0 ) {
-		perror("setsockopt() failed");
-		goto error;
+			perror("setsockopt() failed");
+			goto error;
 	    }
 	}
     else {
-	perror("Neither IPv4 or IPv6"); 
-  	goto error;
+		perror("Neither IPv4 or IPv6"); 
+		goto error;
     }
-
-
     
     if(localAddr)
-	freeaddrinfo(localAddr);
+		freeaddrinfo(localAddr);
     if(multicastAddr)
-	freeaddrinfo(multicastAddr);
+		freeaddrinfo(multicastAddr);
     
     return sock;
 
