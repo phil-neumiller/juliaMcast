@@ -10,7 +10,7 @@ SRCS = msock.c juliaMcast.c
 OBJS = $(SRCS:.c=.o)
 
 .PHONY: all
-all: ${TARGET_LIB} server client
+all: ${TARGET_LIB} server client send receive
 
 $(TARGET_LIB): $(OBJS)
 	$(CC) ${LDFLAGS} -o $@ $^
@@ -20,6 +20,12 @@ server: server.o msock.o
 	
 client: client.o msock.o
 	$(CC) -o client client.c msock.c
+
+send: send.o
+	$(CC) -o send send.c
+
+receive: receive.o
+	$(CC) -o receive receive.c
 
 $(SRCS:.c=.d):%.d:%.c
 	$(CC) $(CFLAGS) -MM $< >$@
