@@ -107,16 +107,14 @@ SOCKET mcast_recv_socket(char* multicastIP, char* multicastPort, int multicastRe
     struct addrinfo   hints  = { 0 };    	/* Hints for name lookup */
     struct addrinfo*  localAddr = 0;       /* Local address to bind to */
     struct addrinfo*  multicastAddr = 0;   /* Multicast Address */
-    int 	yes=1;
-    int philError = 0;
+    int 	yes=1;    
       
     /* Resolve the multicast group address */
     hints.ai_family = PF_UNSPEC;
     hints.ai_flags  = AI_NUMERICHOST;
     int status;
     if ((status = getaddrinfo(multicastIP, NULL, &hints, &multicastAddr)) != 0) {
-	    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
-	    philError = 1;
+	    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));	    
 	    goto error;
     }
        
@@ -129,14 +127,12 @@ SOCKET mcast_recv_socket(char* multicastIP, char* multicastPort, int multicastRe
     hints.ai_flags    = AI_PASSIVE; /* Return an address we can bind to */
     if ( getaddrinfo(NULL, multicastPort, &hints, &localAddr) != 0 ) {
 		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
-		philError = 2;
 		goto error;
     }
 
     /* Create socket for receiving datagrams */
     if ( (sock = socket(localAddr->ai_family, localAddr->ai_socktype, 0)) < 0 ) {
 		perror("socket() failed");
-		philError = 3;
 		goto error;
     }
           
@@ -147,14 +143,12 @@ SOCKET mcast_recv_socket(char* multicastIP, char* multicastPort, int multicastRe
     if (setsockopt(sock,SOL_SOCKET,SO_REUSEADDR,(char*)&yes,sizeof(int)) == -1) {
 		perror("setsockopt");
 		printf("Failed to make socket reusable\n");
-		philError = 4;
 		goto error;
     }
   
     /* Bind the local address to the multicast port */
     if ( bind(sock, localAddr->ai_addr, localAddr->ai_addrlen) != 0 ) {
 		perror("bind() failed");
-		philError = 5;
 		goto error;
     }
 
@@ -165,7 +159,6 @@ SOCKET mcast_recv_socket(char* multicastIP, char* multicastPort, int multicastRe
     if(getsockopt(sock, SOL_SOCKET, SO_RCVBUF,(char*)&optval, &optval_len) !=0) {
 		perror("getsockopt");
 		printf("Failed to getsock option for receive buff size\n");
-		philError = 6;
 		goto error;
     }
     dfltrcvbuf = optval;
@@ -173,13 +166,11 @@ SOCKET mcast_recv_socket(char* multicastIP, char* multicastPort, int multicastRe
     if(setsockopt(sock,SOL_SOCKET,SO_RCVBUF,(char*)&optval,sizeof(optval)) != 0) {
 		perror("setsockopt");
 		printf("Failed to set socket buffer size\n");
-		philError = 7;
 		goto error;
     }
     if(getsockopt(sock, SOL_SOCKET, SO_RCVBUF,(char*)&optval, &optval_len) != 0) {
 		perror("getsockopt");
 		printf("Failed check up\n");
-		philError = 8;
 		goto error;
     }
     //printf("tried to set socket receive buffer from %d to %d, got %d\n",
@@ -205,7 +196,6 @@ SOCKET mcast_recv_socket(char* multicastIP, char* multicastPort, int multicastRe
 	    if ( setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &multicastRequest, sizeof(multicastRequest)) != 0 ) {
 			perror("setsockopt() failed");
 			printf("Joining mulitcast address failed\n");
-			philError = 9;
 			goto error;
 	    }
 	}
@@ -226,13 +216,11 @@ SOCKET mcast_recv_socket(char* multicastIP, char* multicastPort, int multicastRe
 	    if ( setsockopt(sock, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP, (char*) &multicastRequest, sizeof(multicastRequest)) != 0 ) {
 			perror("setsockopt() failed");
 			printf("Failed to join here man\n");
-			philError = 10;
 			goto error;
 	    }
 	}
     else {
 		perror("Neither IPv4 or IPv6"); 
-		philError = 11;
 		goto error;
     }
     
@@ -244,7 +232,6 @@ SOCKET mcast_recv_socket(char* multicastIP, char* multicastPort, int multicastRe
     return sock;
 
  error:
-	printf("philError = %d\n", philError);
     if(localAddr)
 	freeaddrinfo(localAddr);
     if(multicastAddr)
