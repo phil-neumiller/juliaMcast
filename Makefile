@@ -16,8 +16,10 @@ $(TARGET_LIB): $(OBJS)
 	$(CC) ${LDFLAGS} -o $@ $^
 	
 server: server.o msock.o
-
+	$(CC) -o server server.c msock.c
+	
 client: client.o msock.o
+	$(CC) -o client client.c msock.c
 
 $(SRCS:.c=.d):%.d:%.c
 	$(CC) $(CFLAGS) -MM $< >$@
