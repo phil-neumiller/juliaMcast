@@ -16,13 +16,12 @@
  * http://cboard.cprogramming.com/showthread.php?t=67469
  * 
  * Modified to run multi-platform by Christian Beier <dontmind@freeshell.org>.
+ * Modified by Phil Neumiller to interact with Julia on Raspberry PI
  */
 
 
 
-#ifdef UNIX
 #include <unistd.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

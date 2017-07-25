@@ -10,7 +10,7 @@
 
 
 #define SLEEP_1_SECOND 1000000
-#define LOOP_COUNT 10
+#define LOOP_COUNT 100
 
 static int pktCount = 0;
 
@@ -21,25 +21,12 @@ void DieWithError(char *msg)
 }
 
 /* this function is run by the second thread */
-void *inc_x(void *x_void_ptr)
+void *beacon(void *x_void_ptr)
 {
-	/* increment x to 100 */
-	int *x_ptr = (int *)x_void_ptr;
-	while(++(*x_ptr) < LOOP_COUNT) 
-	{
-		usleep(SLEEP_1_SECOND);
-		printf("Aloha: x =%d\n", *x_ptr);
-		fflush(stdout);
-		advertisePresence("223.0.0.1", "222");
-	}
-
-	printf("x increment finished\n");
-
-	/* the function must return something - NULL will do */
-	return NULL;
+	       
+	advertisePresence("223.0.0.1", "2222", 100, 1000000);	
+	return x_void_ptr;
 }
-
-
 
 int advertise() 
 {
@@ -50,10 +37,10 @@ int advertise()
 	printf("x: %d, y: %d\n", x, y);
 
 	/* this variable is our reference to the second thread */
-	pthread_t inc_x_thread;
+	pthread_t advertise_thread;
 
-	/* create a second thread which executes inc_x(&x) */
-	if(pthread_create(&inc_x_thread, NULL, inc_x, &x)) {
+	/* create a second thread which executes advertise(&x) */
+	if(pthread_create(&advertise_thread, NULL, beacon, &x)) {
 		fprintf(stderr, "Error creating thread\n");
 		return 1;
 	}
@@ -68,7 +55,7 @@ int advertise()
 	printf("y increment finished\n");
 
 	/* wait for the second thread to finish */
-	if(pthread_join(inc_x_thread, NULL)) {
+	if(pthread_join(advertise_thread, NULL)) {
 		fprintf(stderr, "Error joining thread\n");
 		return 2;
 	}
@@ -77,8 +64,7 @@ int advertise()
 	printf("x: %d, y: %d\n", x, y);
 	
 	
-	
-	//advertisePresence("239.0.0.1","222", 1000);
+		
 	return 1;
 }
 
@@ -92,7 +78,7 @@ int discover()
 {
 	printf("In neighbor discovery C-function\n");
 	fflush(stdout);
-	discoverNeighbors("223.0.0.1", "222");
+	discoverNeighbors("223.0.0.1", "2222");
 	return 0;
 }
 
@@ -126,26 +112,33 @@ int discoverNeighbors(char *multicastIP, char *mulitcastPort)
 	exit(EXIT_SUCCESS);
 }
 
-int advertisePresence(char *multicastIP, char *multicastPort) 
+int advertisePresence(char *multicastIP, char *multicastPort, int loopCount, int usleepTime) 
 {
 	SOCKET 	sock;
 	struct addrinfo *multicastAddr;
 	int    	sendStringLen;          /* Length of string to multicast */
-	int     multicastTTL=3;         /* Arg: TTL of multicast packets */
-			
+	int     multicastTTL=1;         /* Arg: TTL of multicast packets */
+	int 	i = 0;
+				
 	char *advertisementStr="Aloha Beacon\n";
 	fprintf(stdout, advertisementStr);
 	fflush(stdout);
 	
 	sendStringLen = strlen(advertisementStr);	
-	sock = mcast_send_socket(multicastIP, multicastPort, multicastTTL, &multicastAddr);	
-	if(sock == -1 )
+	sock = mcast_send_socket(multicastIP, multicastPort, multicastTTL, &multicastAddr);
+		
+	if(sock == -1 ) {
 		printf("\nmcast_send_socket() failed\n");	
-	        
-    if ( sendto(sock, advertisementStr, sendStringLen, 0,
-		  multicastAddr->ai_addr, multicastAddr->ai_addrlen) != sendStringLen )
-			DieWithError("sendto() sent a different number of bytes than expected");        
-    printf("sent beacon packet %d\n", pktCount++);
+		DieWithError("Didn't even get to advertise function!\n");
+	}
+	
+	for (i = 0; i < loopCount; i++) {
+		if ( sendto(sock, advertisementStr, sendStringLen, 0,
+			multicastAddr->ai_addr, multicastAddr->ai_addrlen) != sendStringLen )
+				DieWithError("sendto() sent a different number of bytes than expected");        
+		printf("sent beacon packet %d\n", pktCount++);
+		usleep(usleepTime);
+	}
 	return 0;
 }
 

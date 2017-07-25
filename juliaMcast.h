@@ -10,7 +10,7 @@
 extern int advertise();
 extern int testlib();
 extern int discover();
-extern int advertisePresence(char *, char *);
+extern int advertisePresence(char *multicastIP, char *multicastPort, int loopCount, int usleepTime);
 extern int discoverNeighbors(char *, char *);
 
 #endif

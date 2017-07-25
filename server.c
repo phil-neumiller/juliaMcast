@@ -23,9 +23,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef UNIX
 #include <unistd.h> /* for usleep() */
-#endif
 #include "msock.h"
 
 
